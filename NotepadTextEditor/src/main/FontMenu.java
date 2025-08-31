@@ -1,13 +1,19 @@
 package main;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -38,6 +44,9 @@ public class FontMenu extends JDialog {
 		addFontStyleChooser();
 		addFontSizeChooser();
 		addFontColorChooser();
+		
+		// action buttons
+		JButton applyButton = new JButton("Apply");
 	}
 
 	private void addFontChooser() {
@@ -332,6 +341,24 @@ public class FontMenu extends JDialog {
 	
 	private void addFontColorChooser() {
 		// display to the user the current color of the text
+		JPanel currentColorBox = new JPanel();
+		currentColorBox.setBounds(175, 200, 23, 23);
+		currentColorBox.setBackground(source.getTextArea().getForeground());
+		currentColorBox.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		add(currentColorBox);
+		
+		JButton chooseColorButton = new JButton("Choose Color");
+		chooseColorButton.setBounds(10, 200, 150, 25);
+		chooseColorButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Color c = JColorChooser.showDialog(null, "Select a color", Color.BLACK);
+				
+				// update colorbox to selected color
+				currentColorBox.setBackground(c);
+			}
+		});
+		add(chooseColorButton);
 	}
 	
 	

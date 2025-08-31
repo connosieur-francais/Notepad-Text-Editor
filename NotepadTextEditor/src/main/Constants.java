@@ -8,6 +8,9 @@ public class Constants {
 	// default notepad font
 	public static final Font DEFAULT_NOTEPAD_FONT = new Font("Dialog", Font.PLAIN, 12);
 	
+	// default text color
+	public static final Color DEFAULT_NOTEPAD_FONT_COLOR = Color.BLACK;
+	
 	// This class stores all the constants of the system
 	public static final String ASSET_PATH = "src/main/assets";
 	

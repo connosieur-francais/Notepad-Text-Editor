@@ -90,6 +90,7 @@ public class NotepadGUI extends JFrame {
 		// an area to type text into
 		textArea = new JTextArea();
 		textArea.setFont(Constants.DEFAULT_NOTEPAD_FONT);
+		textArea.setForeground(Constants.DEFAULT_NOTEPAD_FONT_COLOR);
 		// everytime we text into our JTextArea, undoManager will add an EditEvent
 		// to the undoManager, which will handle the undo and redos
 		textArea.getDocument().addUndoableEditListener(new UndoableEditListener() {
