@@ -23,7 +23,8 @@ public class NotepadGUI extends JFrame {
 	// file explorer
 	private JFileChooser fileChooser;
 
-	JTextArea textArea;
+	private JTextArea textArea;
+	private File currentFile;
 
 	public NotepadGUI() {
 		super("Notepad");
@@ -76,6 +77,9 @@ public class NotepadGUI extends JFrame {
 
 				// reset text area
 				textArea.setText("");
+
+				// reset the current file variable
+				currentFile = null;
 			}
 		});
 		fileMenu.add(newMenuItem);
@@ -86,17 +90,22 @@ public class NotepadGUI extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				// open file explorer
+				int result = fileChooser.showOpenDialog(NotepadGUI.this);
+
 				try {
-					// open file explorer
-					int result = fileChooser.showOpenDialog(NotepadGUI.this);
 					// get the selected file
 					File selectedFile = fileChooser.getSelectedFile();
-					
-					// continue to execute code only if the user pressed the save button and the selected file is not null
+
+					// continue to execute code only if the user pressed the save button and the
+					// selected file is not null
 					if (result != JFileChooser.APPROVE_OPTION || selectedFile == null) {
 						return;
 					}
-
+					
+					// update the currentFile variable
+					currentFile = selectedFile;
+					
 					// reset notepad
 					newMenuItem.doClick(); // doClick() method executes the action we implemented with the open feature
 
@@ -114,7 +123,7 @@ public class NotepadGUI extends JFrame {
 						fileText.append(readText);
 						fileText.append("\n");
 					}
-					
+
 					// update text area gui
 					textArea.setText(fileText.toString());
 				} catch (Exception e1) {
@@ -159,9 +168,13 @@ public class NotepadGUI extends JFrame {
 
 					// update the title header of gui to the save text file
 					setTitle(fileName);
-
+					
+					// update the currentFile variable
+					currentFile = selectedFile;
+					
 					// show display dialog
 					JOptionPane.showMessageDialog(NotepadGUI.this, "Saved File!");
+					
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -172,10 +185,39 @@ public class NotepadGUI extends JFrame {
 
 		// save functionality - saves text into current text file
 		JMenuItem saveMenuItem = new JMenuItem("Save");
+		saveMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// if the current file is null, then we have to perform save as functionality
+				if (currentFile == null) saveAsMenuItem.doClick();
+				
+				// if the user chooses to cancel saving the file, this means that the
+				// current file will still be null, then we want to prevent executing the rest of the code
+				if (currentFile == null) return;
+				
+				try {
+					// write to current file
+					FileWriter fileWriter = new FileWriter(currentFile);
+					BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+					bufferedWriter.write(textArea.getText());
+					bufferedWriter.close();
+					fileWriter.close();
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
 		fileMenu.add(saveMenuItem);
 
 		// exit functionality - ends program process
 		JMenuItem exitMenuItem = new JMenuItem("Exit");
+		exitMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				NotepadGUI.this.dispose();
+			}
+		});
 		fileMenu.add(exitMenuItem);
 
 		return fileMenu;
