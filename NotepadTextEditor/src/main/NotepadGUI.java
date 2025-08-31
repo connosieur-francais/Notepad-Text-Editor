@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.BorderLayout;
+import java.awt.ComponentOrientation;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -19,6 +20,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
@@ -42,9 +44,11 @@ public class NotepadGUI extends JFrame {
 
 	// Swing's built in library to make key bindings
 	private AbstractAction undoAction, redoAction, saveAction, openAction, newAction;
+	private AbstractAction wordWrapAction;
 
 	// Key Bindings that we are Implementing
 	private KeyStroke undoKeyStroke, redoKeyStroke, saveKeyStroke, openKeyStroke, newKeyStroke;
+	private KeyStroke wordWrapKeyStroke;
 
 	public NotepadGUI() {
 		super("Notepad");
@@ -69,6 +73,7 @@ public class NotepadGUI extends JFrame {
 		saveKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK); // Ctrl - S
 		openKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK); // Ctrl - O
 		newKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK); // Ctrl - N
+		wordWrapKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.ALT_MASK); // Alt + W
 
 		addGuiComponents();
 	}
@@ -89,7 +94,9 @@ public class NotepadGUI extends JFrame {
 
 			}
 		});
-		panel.add(textArea, BorderLayout.CENTER);
+
+		JScrollPane scrollPane = new JScrollPane(textArea);
+		panel.add(scrollPane, BorderLayout.CENTER);
 	}
 
 	private void addToolbar() {
@@ -140,7 +147,7 @@ public class NotepadGUI extends JFrame {
 		};
 
 		// associate the ctrl N keystroke with an action name in InputMap
-		panel.getInputMap(JMenuBar.WHEN_IN_FOCUSED_WINDOW).put(newKeyStroke, "NEW");
+		panel.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(newKeyStroke, "NEW");
 
 		// associate action name with the action in the action map
 		panel.getActionMap().put("NEW", newAction);
@@ -205,7 +212,7 @@ public class NotepadGUI extends JFrame {
 		};
 
 		// associate the ctrl O keystroke with an action name in InputMap
-		panel.getInputMap(JMenuBar.WHEN_IN_FOCUSED_WINDOW).put(openKeyStroke, "OPEN");
+		panel.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(openKeyStroke, "OPEN");
 
 		// associate action name with the action in the action map
 		panel.getActionMap().put("OPEN", openAction);
@@ -298,7 +305,7 @@ public class NotepadGUI extends JFrame {
 		};
 
 		// associate the ctrl S keystroke with an action name in InputMap
-		panel.getInputMap(JMenuBar.WHEN_IN_FOCUSED_WINDOW).put(saveKeyStroke, "SAVE");
+		panel.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(saveKeyStroke, "SAVE");
 
 		// associate action name with the action in the action map
 		panel.getActionMap().put("SAVE", saveAction);
@@ -320,7 +327,7 @@ public class NotepadGUI extends JFrame {
 		JMenu editMenu = new JMenu("Edit");
 
 		JMenuItem undoMenuItem = new JMenuItem("Undo");
-		undoMenuItem.setToolTipText("Ctrl + Z");
+		undoMenuItem.setToolTipText("CTRL + Z");
 		undoMenuItem.addActionListener(new ActionListener() {
 
 			@Override
@@ -344,13 +351,13 @@ public class NotepadGUI extends JFrame {
 		};
 
 		// associate the ctrl z keystroke with an action name in InputMap
-		panel.getInputMap(JMenuBar.WHEN_IN_FOCUSED_WINDOW).put(undoKeyStroke, "UNDO");
+		panel.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(undoKeyStroke, "UNDO");
 
 		// associate action name with the action in the action map
 		panel.getActionMap().put("UNDO", undoAction);
 
 		JMenuItem redoMenuItem = new JMenuItem("Redo");
-		redoMenuItem.setToolTipText("Ctrl + Y");
+		redoMenuItem.setToolTipText("CTRL + Y");
 		redoMenuItem.addActionListener(new ActionListener() {
 
 			@Override
@@ -372,28 +379,85 @@ public class NotepadGUI extends JFrame {
 		};
 
 		// associate the ctrl y keystroke with an action name in InputMap
-		panel.getInputMap(JMenuBar.WHEN_IN_FOCUSED_WINDOW).put(redoKeyStroke, "REDO");
+		panel.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(redoKeyStroke, "REDO");
 
 		// associate action name with the action in the action map
 		panel.getActionMap().put("REDO", redoAction);
 
 		return editMenu;
 	}
-	
+
 	private JMenu addFormatMenu() {
 		JMenu formatMenu = new JMenu("Format");
-		
+
 		// wrap word functionality
 		JCheckBoxMenuItem wordWrapMenuItem = new JCheckBoxMenuItem("Word Wrap");
+		wordWrapMenuItem.setToolTipText("ALT + W");
+		wordWrapMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				boolean isChecked = wordWrapMenuItem.getState();
+				if (isChecked) {
+					// wrap words
+					textArea.setLineWrap(true);
+					textArea.setWrapStyleWord(true);
+				} else {
+					textArea.setLineWrap(false);
+					textArea.setWrapStyleWord(false);
+				}
+
+			}
+		});
 		formatMenu.add(wordWrapMenuItem);
-		
+
+		wordWrapAction = new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				wordWrapMenuItem.doClick();
+			}
+		};
+		panel.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(wordWrapKeyStroke, "WORD WRAP");
+		panel.getActionMap().put("WORD WRAP", wordWrapAction);
+
 		// aligning text
 		JMenu alignTextMenu = new JMenu("Align Text");
+
+		// align text to the left
+		JMenuItem alignTextLeftMenuItem = new JMenuItem("Left Align");
+		alignTextLeftMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				textArea.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+			}
+		});
+		alignTextMenu.add(alignTextLeftMenuItem);
+
+		// align text to the Right
+		JMenuItem alignTextRightMenuItem = new JMenuItem("Right Align");
+		alignTextRightMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				textArea.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+			}
+		});
+		alignTextMenu.add(alignTextRightMenuItem);
+
 		formatMenu.add(alignTextMenu);
-		
+
 		// font format
 		JMenuItem fontMenuItem = new JMenuItem("Font...");
+		fontMenuItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		formatMenu.add(fontMenuItem);
+		
+		
+		
 		return formatMenu;
 	}
 }
