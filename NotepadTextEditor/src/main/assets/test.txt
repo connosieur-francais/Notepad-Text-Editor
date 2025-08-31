@@ -6,3 +6,5 @@ just try and see if this works ;)
 
 theres multiple spaces in here
 lets see if the code will break ;0
+
+keybinds work as intended
