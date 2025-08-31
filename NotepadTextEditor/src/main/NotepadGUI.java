@@ -51,11 +51,11 @@ public class NotepadGUI extends JFrame {
 
 	// Swing's built in library to make key bindings
 	private AbstractAction undoAction, redoAction, saveAction, openAction, newAction;
-	private AbstractAction wordWrapAction;
+	private AbstractAction wordWrapAction, zoomInAction, zoomOutAction;
 
 	// Key Bindings that we are Implementing
 	private KeyStroke undoKeyStroke, redoKeyStroke, saveKeyStroke, openKeyStroke, newKeyStroke;
-	private KeyStroke wordWrapKeyStroke;
+	private KeyStroke wordWrapKeyStroke, zoomInKeyStroke, zoomOutKeyStroke;
 
 	public NotepadGUI() {
 		super("Notepad");
@@ -81,6 +81,8 @@ public class NotepadGUI extends JFrame {
 		openKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK); // Ctrl - O
 		newKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK); // Ctrl - N
 		wordWrapKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.ALT_MASK); // Alt + W
+		zoomInKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, ActionEvent.CTRL_MASK); // CTRL + "+"
+		zoomOutKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, ActionEvent.CTRL_MASK); // CTRL + "-"
 
 		addGuiComponents();
 	}
@@ -123,6 +125,7 @@ public class NotepadGUI extends JFrame {
 		menuBar.add(addFileMenu());
 		menuBar.add(addEditMenu());
 		menuBar.add(addFormatMenu());
+		menuBar.add(addViewMenu());
 
 		panel.add(toolbar, BorderLayout.NORTH);
 
@@ -470,6 +473,77 @@ public class NotepadGUI extends JFrame {
 		formatMenu.add(fontMenuItem);
 
 		return formatMenu;
+	}
+
+	private JMenu addViewMenu() {
+		JMenu viewMenu = new JMenu("View");
+
+		JMenu zoomMenu = new JMenu("Zoom");
+
+		// Zoom in functionality
+		JMenuItem zoomInMenuItem = new JMenuItem("Zoom In");
+		zoomInMenuItem.setToolTipText("CTRL + '+'");
+		zoomInMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Font currentFont = textArea.getFont();
+				textArea.setFont(new Font(currentFont.getName(), currentFont.getStyle(), currentFont.getSize() + 1));
+			}
+		});
+		zoomMenu.add(zoomInMenuItem);
+
+		// define action for zoom in
+		zoomInAction = new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				zoomInMenuItem.doClick();
+			}
+		};
+
+		panel.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(zoomInKeyStroke, "ZOOM IN");
+
+		panel.getActionMap().put("ZOOM IN", zoomInAction);
+
+		// Zoom out functionality
+		JMenuItem zoomOutMenuItem = new JMenuItem("Zoom Out");
+		zoomOutMenuItem.setToolTipText("CTRL + '-'");
+		zoomOutMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Font currentFont = textArea.getFont();
+				textArea.setFont(new Font(currentFont.getName(), currentFont.getStyle(), currentFont.getSize() - 1));
+			}
+		});
+		zoomMenu.add(zoomOutMenuItem);
+
+		// define action for zoom out
+		zoomOutAction = new AbstractAction() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				zoomOutMenuItem.doClick();
+
+			}
+		};
+
+		panel.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(zoomOutKeyStroke, "ZOOM OUT");
+
+		panel.getActionMap().put("ZOOM OUT", zoomOutAction);
+
+		// restore default zoom
+		JMenuItem zoomRestoreMenuItem = new JMenuItem("Restore Default Zoom");
+		zoomRestoreMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Font currentFont = textArea.getFont();
+				textArea.setFont(new Font(currentFont.getName(), currentFont.getStyle(), 12));
+
+			}
+		});
+		zoomMenu.add(zoomRestoreMenuItem);
+
+		viewMenu.add(zoomMenu);
+		return viewMenu;
 	}
 
 	public void updateTextArea(String fontFamily, int fontStyle, int fontSize, Color fontColor) {

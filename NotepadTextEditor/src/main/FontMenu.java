@@ -77,6 +77,9 @@ public class FontMenu extends JDialog {
 				
 				// apply all these settings to the source text area
 				source.updateTextArea(fontFamily, fontStyle, fontSize, fontColor);
+				
+				// dispose of the menu after applying
+				FontMenu.this.dispose();
 			}
 		});
 		add(applyButton);
@@ -87,8 +90,7 @@ public class FontMenu extends JDialog {
 		cancelButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				FontMenu.this.dispose();
 			}
 		});
 		add(cancelButton);
