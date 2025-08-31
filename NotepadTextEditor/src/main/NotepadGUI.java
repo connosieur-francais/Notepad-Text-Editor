@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -38,7 +39,7 @@ public class NotepadGUI extends JFrame {
 	private JFileChooser fileChooser;
 
 	private JTextArea textArea;
-	
+
 	public JTextArea getTextArea() {
 		return textArea;
 	}
@@ -90,6 +91,9 @@ public class NotepadGUI extends JFrame {
 		// an area to type text into
 		textArea = new JTextArea();
 		textArea.setFont(Constants.DEFAULT_NOTEPAD_FONT);
+		textArea.setFocusTraversalKeysEnabled(true);
+		textArea.setTabSize(4);
+		textArea.setHighlighter(null);
 		textArea.setForeground(Constants.DEFAULT_NOTEPAD_FONT_COLOR);
 		// everytime we text into our JTextArea, undoManager will add an EditEvent
 		// to the undoManager, which will handle the undo and redos
@@ -466,5 +470,10 @@ public class NotepadGUI extends JFrame {
 		formatMenu.add(fontMenuItem);
 
 		return formatMenu;
+	}
+
+	public void updateTextArea(String fontFamily, int fontStyle, int fontSize, Color fontColor) {
+		textArea.setFont(new Font(fontFamily, fontStyle, fontSize));
+		textArea.setForeground(fontColor);
 	}
 }

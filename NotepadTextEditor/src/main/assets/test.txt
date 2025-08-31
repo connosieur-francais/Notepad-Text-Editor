@@ -2,7 +2,7 @@ hello this is a quick test
 i have multiple lines
 just try and see if this works ;)
 
-
+this is pretty cool :D
 
 theres multiple spaces in here
 lets see if the code will break ;0
