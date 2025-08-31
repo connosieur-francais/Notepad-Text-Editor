@@ -2,6 +2,7 @@ package main;
 
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -37,6 +38,11 @@ public class NotepadGUI extends JFrame {
 	private JFileChooser fileChooser;
 
 	private JTextArea textArea;
+	
+	public JTextArea getTextArea() {
+		return textArea;
+	}
+
 	private File currentFile;
 
 	// Swing's built in library to manage undo and redo functionalities
@@ -83,6 +89,7 @@ public class NotepadGUI extends JFrame {
 
 		// an area to type text into
 		textArea = new JTextArea();
+		textArea.setFont(Constants.DEFAULT_NOTEPAD_FONT);
 		// everytime we text into our JTextArea, undoManager will add an EditEvent
 		// to the undoManager, which will handle the undo and redos
 		textArea.getDocument().addUndoableEditListener(new UndoableEditListener() {
@@ -447,17 +454,16 @@ public class NotepadGUI extends JFrame {
 		// font format
 		JMenuItem fontMenuItem = new JMenuItem("Font...");
 		fontMenuItem.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				// launch the font menu
+				new FontMenu(NotepadGUI.this).setVisible(true);
+
 			}
 		});
 		formatMenu.add(fontMenuItem);
-		
-		
-		
+
 		return formatMenu;
 	}
 }
